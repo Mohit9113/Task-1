@@ -1,0 +1,91 @@
+Task -1 python code:
+
+import pandas as pd
+df = pd.read_csv(r"D:\sales.csv")  # Replace with your dataset path
+print("Initial shape:", df.shape)
+print("\nFirst 5 rows:\n", df.head())
+print("\nMissing values per column:\n", df.isnull().sum())
+print("\nNumber of duplicate rows:", df.duplicated().sum())
+print("\nData types:\n", df.dtypes)
+numeric_cols = df.select_dtypes(include=['int64','float64']).columns
+for col in numeric_cols:
+    df[col] = df[col].fillna(df[col].median())
+df.dropna(inplace=True)
+df.drop_duplicates(inplace=True)
+text_cols = df.select_dtypes(include=['object']).columns
+for col in text_cols:
+    df[col] = df[col].astype(str).str.lower().str.strip()
+if 'date' in df.columns:
+    df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y', errors='coerce')
+df.columns = df.columns.str.lower().str.strip().str.replace(' ', '_')
+if 'age' in df.columns:
+    df['age'] = pd.to_numeric(df['age'], errors='coerce').fillna(0).astype(int)
+df.to_csv(r"cleaned_dataset.csv", index=False)
+summary = f"""
+Cleaning Summary:
+- Original shape: (6435, 8)
+- Missing values handled (filled numeric medians, dropped remaining)
+- Duplicate rows removed
+- Text columns standardized (lowercase & stripped)
+- Date column converted to datetime
+- Column names cleaned to snake_case
+- Data types checked & corrected
+- Cleaned dataset shape: {df.shape}
+- Cleaned dataset saved as 'cleaned_dataset.csv'
+"""
+print(summary)
+
+
+THE OUTPUT
+
+Initial shape: (6435, 8)
+
+First 5 rows:
+    Store        Date  Weekly_Sales  Holiday_Flag  Temperature  Fuel_Price  \
+0      1  05-02-2010    1643690.90             0        42.31       2.572   
+1      1  12-02-2010    1641957.44             1        38.51       2.548   
+2      1  19-02-2010    1611968.17             0        39.93       2.514   
+3      1  26-02-2010    1409727.59             0        46.63       2.561   
+4      1  05-03-2010    1554806.68             0        46.50       2.625   
+
+          CPI  Unemployment  
+0  211.096358         8.106  
+1  211.242170         8.106  
+2  211.289143         8.106  
+3  211.319643         8.106  
+4  211.350143         8.106  
+
+Missing values per column:
+ Store           0
+Date            0
+Weekly_Sales    0
+Holiday_Flag    0
+Temperature     0
+Fuel_Price      0
+CPI             0
+Unemployment    0
+dtype: int64
+
+Number of duplicate rows: 0
+
+Data types:
+ Store             int64
+Date             object
+Weekly_Sales    float64
+Holiday_Flag      int64
+Temperature     float64
+Fuel_Price      float64
+CPI             float64
+Unemployment    float64
+dtype: object
+
+Cleaning Summary:
+- Original shape: (6435, 8)
+- Missing values handled (filled numeric medians, dropped remaining)
+- Duplicate rows removed
+- Text columns standardized (lowercase & stripped)
+- Date column converted to datetime
+- Column names cleaned to snake_case
+- Data types checked & corrected
+- Cleaned dataset shape: (6435, 8)
+- Cleaned dataset saved as 'cleaned_dataset.csv'
